@@ -37,6 +37,14 @@ class PagesController < ApplicationController
     @organizations.sort_by! { |o| o['name'].downcase }
   end
 
+  def toggle_locale
+    if user_signed_in?
+      user = User.find(current_user)
+      user.update!(locale: params[:locale])
+    end
+    render :nothing => true
+  end
+
   def about; end
 
   def faq; end

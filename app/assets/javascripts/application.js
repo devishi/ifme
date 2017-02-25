@@ -55,8 +55,32 @@ function isShow(forms) {
 	return result;
 }
 
+function toggleLocale(locale) {
+	$.ajax({
+		url: '/toggle_locale',
+		data: { locale: locale }
+	}).done(function() {
+		if (window.localStorage !== 'undefined') {
+			window.localStorage.setItem('locale', locale);
+		}
+		var href = window.location.href;
+		if (href.indexOf(locale) === -1) {
+			window.location.href = `${href.split('?')[0]}?locale=${locale}`;
+		}
+	});
+}
+
+var onReadyLocale = function() {
+	if (window.localStorage !== 'undefined' && window.localStorage.getItem('locale')) {
+		toggleLocale(window.localStorage.getItem('locale'));
+	}
+	$('#locale').change(function() {
+		toggleLocale($(this).val());
+	});
+}
+
 var onReadyMomentsAndStrategies = function() {
-	$('.expand_toggle').click(function(event){
+	$('.expand_toggle').click(function(event) {
 		var toggleID = $(this).data('toggle');
 		$(toggleID).toggle();
 		$(this).find('.toggle_button i').toggleClass('fa-caret-down');
@@ -75,6 +99,8 @@ var onReadyApplication = function() {
 			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
 		}
 	});
+
+	onReadyLocale();
 
 	// Timezone detection
 	var tz = jstz.determine();
